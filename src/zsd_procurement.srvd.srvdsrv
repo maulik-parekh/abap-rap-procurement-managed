@@ -1,0 +1,9 @@
+@EndUserText.label: 'Service Definition for Procurement'
+define service ZSD_PROCUREMENT {
+  expose ZC_ProcurementHeader as RequisitionHeader;
+  expose ZC_ProcurementItem   as RequisitionItem;
+  expose ZC_AccountAssignment as AccountAssignment;
+  expose ZI_SupplierVH        as SupplierVH;
+  expose ZI_MaterialVH        as MaterialVH;
+  expose ZI_CostCenterVH      as CostCenterVH;
+}

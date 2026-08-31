@@ -1,0 +1,37 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Purchase Requisition', typeNamePlural: 'Purchase Requisitions', title: { type: #STANDARD, value: 'PRNumber' } }
+
+annotate entity ZC_ProcurementHeader with
+{
+  @UI.facet: [
+    { id: 'HeaderFacet', purpose: #HEADER, type: #FIELDGROUP_REFERENCE, targetQualifier: 'HeaderData' },
+    { id: 'ItemFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE, label: 'Line Items', targetElement: '_ProcurementItem' }
+  ]
+
+  PRUUID;
+
+  @UI.lineItem: [{ position: 10, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 10 }]
+  PRNumber;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 20 }]
+  Description;
+
+  @UI.lineItem: [{ position: 30 }]
+  RequisitionStatus;
+
+  @UI.lineItem: [{ position: 40 }]
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_SupplierVH', element: 'SupplierID' } }]
+  SupplierID;
+
+  @UI.lineItem: [{ position: 50 }]
+  TotalAmount;
+
+  @UI.lineItem: [{ position: 60 }]
+  ApprovalRiskLevel;
+
+  @UI.lineItem: [{ position: 70 }]
+  DaysUntilDelivery;
+}

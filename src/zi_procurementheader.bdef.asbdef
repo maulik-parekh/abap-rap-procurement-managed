@@ -1,0 +1,183 @@
+managed implementation in class zbp_i_procurementheader unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZI_ProcurementHeader alias Header
+persistent table zpr_header
+draft table zpr_header_d
+lock master
+total etag LastChangedAt
+authorization master ( instance )
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+
+  draft determine action Prepare
+  {
+    validation validateSupplier;
+  }
+
+  field ( readonly, numbering : managed ) PRUUID;
+  field ( readonly )
+    PRNumber,
+    TotalAmount,
+    CreatedAt,
+    CreatedBy,
+    LastChangedAt,
+    LastChangedBy;
+
+  field ( mandatory )
+    SupplierID,
+    Description;
+
+  validation validateSupplier on save
+  {
+    create;
+    update;
+    field SupplierID;
+  }
+
+  determination setDefaultStatus on modify
+  {
+    create;
+  }
+
+  determination calculateTotalAmount on save
+  {
+    create;
+    update;
+  }
+
+  action ( features : instance )
+    ApproveRequisition
+    result [1] $self;
+
+  action ( features : instance )
+    RejectRequisition
+    result [1] $self;
+
+  factory action DuplicateRequisition [1];
+
+  action ( features : instance )
+    ReassignSupplier
+    parameter ZA_ReassignSupplierParam
+    result [1] $self;
+
+  association _ProcurementItem
+  {
+    create;
+    with draft;
+  }
+
+  mapping for zpr_header
+  {
+    PRUUID             = pr_uuid;
+    PRNumber           = pr_number;
+    SupplierID         = supplier_id;
+    Description        = description;
+    RequisitionStatus  = requisition_status;
+    TotalAmount        = total_amount;
+    CurrencyCode       = currency_code;
+    CreatedAt          = created_at;
+    CreatedBy          = created_by;
+    LastChangedAt      = last_changed_at;
+    LastChangedBy      = last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_ProcurementItem alias Item
+persistent table zpr_item
+draft table zpr_item_d
+lock dependent by _ProcurementHeader
+authorization dependent by _ProcurementHeader
+{
+  update;
+  delete;
+
+  field ( readonly, numbering : managed ) ItemUUID;
+  field ( readonly )
+    PRUUID,
+    ItemNumber,
+    ItemAmount;
+
+  field ( mandatory )
+    MaterialID,
+    Plant,
+    Uom,
+    Quantity,
+    RequiredDeliveryDate;
+
+  association _AccountAssignment
+  {
+    create;
+    with draft;
+  }
+
+  association _ProcurementHeader
+  {
+    with draft;
+  }
+
+  mapping for zpr_item
+  {
+    PRUUID               = pr_uuid;
+    ItemUUID             = item_uuid;
+    ItemNumber           = item_number;
+    MaterialID           = material_id;
+    Plant                = plant;
+    Uom                   = uom;
+    Quantity             = quantity;
+    RequiredDeliveryDate = required_delivery_date;
+    ItemAmount           = item_amount;
+    CurrencyCode         = currency_code;
+    LocalLastChangedAt   = local_last_changed_at;
+  }
+}
+
+define behavior for ZI_AccountAssignment alias Account
+persistent table zpr_account
+draft table zpr_account_d
+lock dependent by _ProcurementHeader
+authorization dependent by _ProcurementHeader
+{
+  update;
+  delete;
+
+  field ( readonly, numbering : managed ) AccountUUID;
+  field ( readonly )
+    ItemUUID,
+    PRUUID;
+
+  field ( mandatory )
+    CostCenterID,
+    ControllingArea,
+    Percentage;
+
+  association _ProcurementHeader
+  {
+    with draft;
+  }
+
+  association _ProcurementItem
+  {
+    with draft;
+  }
+
+  mapping for zpr_account
+  {
+    PRUUID             = pr_uuid;
+    ItemUUID           = item_uuid;
+    AccountUUID        = account_uuid;
+    CostCenterID       = cost_center_id;
+    ControllingArea    = controlling_area;
+    Percentage         = percentage;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}

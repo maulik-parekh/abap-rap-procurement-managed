@@ -1,0 +1,60 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_ProcurementHeader alias Header
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+  use action ApproveRequisition;
+  use action RejectRequisition;
+  use action DuplicateRequisition;
+  use action ReassignSupplier;
+
+  use association _ProcurementItem
+  {
+    create;
+    with draft;
+  }
+}
+
+define behavior for ZC_ProcurementItem alias Item
+{
+  use update;
+  use delete;
+
+  use association _AccountAssignment
+  {
+    create;
+    with draft;
+  }
+
+  use association _ProcurementHeader
+  {
+    with draft;
+  }
+}
+
+define behavior for ZC_AccountAssignment alias Account
+{
+  use update;
+  use delete;
+
+  use association _ProcurementItem
+  {
+    with draft;
+  }
+
+  use association _ProcurementHeader
+  {
+    with draft;
+  }
+}
