@@ -1,6 +1,9 @@
 managed implementation in class zbp_i_procurementheader unique;
+
 strict ( 2 );
+
 with draft;
+
 
 define behavior for ZI_ProcurementHeader alias Header
 persistent table zpr_header
@@ -24,13 +27,15 @@ authorization master ( instance )
   }
 
   field ( readonly, numbering : managed ) PRUUID;
+
   field ( readonly )
     PRNumber,
     TotalAmount,
     CreatedAt,
     CreatedBy,
     LastChangedAt,
-    LastChangedBy;
+    LastChangedBy,
+    LocalLastChangedAt;
 
   field ( mandatory )
     SupplierID,
@@ -48,10 +53,9 @@ authorization master ( instance )
     create;
   }
 
-  determination calculateTotalAmount on save
+  determination setDefaultPRNumber on modify
   {
     create;
-    update;
   }
 
   action ( features : instance )
@@ -62,7 +66,8 @@ authorization master ( instance )
     RejectRequisition
     result [1] $self;
 
-  factory action DuplicateRequisition [1];
+  factory action
+    DuplicateRequisition [1];
 
   action ( features : instance )
     ReassignSupplier
@@ -92,6 +97,8 @@ authorization master ( instance )
   }
 }
 
+
+
 define behavior for ZI_ProcurementItem alias Item
 persistent table zpr_item
 draft table zpr_item_d
@@ -102,6 +109,7 @@ authorization dependent by _ProcurementHeader
   delete;
 
   field ( readonly, numbering : managed ) ItemUUID;
+
   field ( readonly )
     PRUUID,
     ItemNumber,
@@ -114,16 +122,37 @@ authorization dependent by _ProcurementHeader
     Quantity,
     RequiredDeliveryDate;
 
+  validation validateRequiredDeliveryDate on save
+  {
+    create;
+    update;
+    field RequiredDeliveryDate;
+  }
+
+  determination calculateHeaderTotal on save
+  {
+    create;
+    update;
+    delete;
+  }
+
+  determination setDefaultItemNumber on modify
+  {
+    create;
+  }
+
   association _AccountAssignment
   {
     create;
     with draft;
   }
 
+
   association _ProcurementHeader
   {
     with draft;
   }
+
 
   mapping for zpr_item
   {
@@ -132,7 +161,7 @@ authorization dependent by _ProcurementHeader
     ItemNumber           = item_number;
     MaterialID           = material_id;
     Plant                = plant;
-    Uom                   = uom;
+    Uom                  = uom;
     Quantity             = quantity;
     RequiredDeliveryDate = required_delivery_date;
     ItemAmount           = item_amount;
@@ -140,6 +169,8 @@ authorization dependent by _ProcurementHeader
     LocalLastChangedAt   = local_last_changed_at;
   }
 }
+
+
 
 define behavior for ZI_AccountAssignment alias Account
 persistent table zpr_account
@@ -151,6 +182,7 @@ authorization dependent by _ProcurementHeader
   delete;
 
   field ( readonly, numbering : managed ) AccountUUID;
+
   field ( readonly )
     ItemUUID,
     PRUUID;
@@ -169,6 +201,7 @@ authorization dependent by _ProcurementHeader
   {
     with draft;
   }
+
 
   mapping for zpr_account
   {

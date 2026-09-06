@@ -15,6 +15,7 @@ define root view entity ZC_ProcurementHeader
 
     Description,
     RequisitionStatus,
+    StatusCriticality,
     SupplierID,
 
     @Semantics.amount.currencyCode: 'CurrencyCode'

@@ -1,37 +1,77 @@
 @Metadata.layer: #CORE
 
-@UI.headerInfo: { typeName: 'Purchase Requisition', typeNamePlural: 'Purchase Requisitions', title: { type: #STANDARD, value: 'PRNumber' } }
+@UI.headerInfo: { 
+  typeName: 'Purchase Requisition', 
+  typeNamePlural: 'Purchase Requisitions', 
+  title: { type: #STANDARD, value: 'PRNumber' },
+  description: { type: #STANDARD, value: 'Description' }
+}
 
 annotate entity ZC_ProcurementHeader with
 {
+  /* ====================================================================
+     LAYOUT STRATEGY / FACETS
+     ==================================================================== */
   @UI.facet: [
-    { id: 'HeaderFacet', purpose: #HEADER, type: #FIELDGROUP_REFERENCE, targetQualifier: 'HeaderData' },
-    { id: 'ItemFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE, label: 'Line Items', targetElement: '_ProcurementItem' }
+    { id: 'GeneralSection', purpose: #STANDARD, type: #COLLECTION, label: 'General Information', position: 10 },
+    { id: 'HeaderDataGroup', parentId: 'GeneralSection', type: #FIELDGROUP_REFERENCE, label: 'Basic Details', targetQualifier: 'HeaderData', position: 10 },
+    { id: 'ItemFacet', purpose: #STANDARD, type: #LINEITEM_REFERENCE, label: 'Line Items', targetElement: '_ProcurementItem', position: 20 }
   ]
 
   PRUUID;
 
+  /* ====================================================================
+     FIELD ANNOTATIONS
+     ==================================================================== */
   @UI.lineItem: [{ position: 10, importance: #HIGH }]
   @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 10 }]
   PRNumber;
 
-  @UI.lineItem: [{ position: 20 }]
+  @UI.lineItem: [{ position: 20, importance: #HIGH }]
   @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 20 }]
   Description;
 
-  @UI.lineItem: [{ position: 30 }]
+  // 🎨 STATUS BINDINGS FOR 'A', 'R', 'N' COLORS & ICONS
+  @UI.lineItem: [
+    { 
+      position: 30, 
+      importance: #HIGH,
+      criticality: 'StatusCriticality',            // Maps color logic (3=Green, 1=Red, 2=Yellow)
+      criticalityRepresentation: #WITH_ICON        // Renders Checkmark, Cross, or Triangle icons
+    },
+    // Action buttons placed directly on the main table row toolbar
+    { type: #FOR_ACTION, dataAction: 'ApproveRequisition', label: 'Approve' },
+    { type: #FOR_ACTION, dataAction: 'RejectRequisition', label: 'Reject' },
+    { type: #FOR_ACTION, dataAction: 'DuplicateRequisition', label: 'Copy Requisition' }
+  ]
+  @UI.fieldGroup: [
+    { 
+      qualifier: 'HeaderData', 
+      position: 30, 
+      criticality: 'StatusCriticality', 
+      criticalityRepresentation: #WITH_ICON 
+    }
+  ]
   RequisitionStatus;
 
-  @UI.lineItem: [{ position: 40 }]
+  @UI.lineItem: [
+    { position: 40 },
+    // Action button utilizing parameters bound to the row selection
+    { type: #FOR_ACTION, dataAction: 'ReassignSupplier', label: 'Change Supplier' }
+  ]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 40 }]
   @Consumption.valueHelpDefinition: [{ entity: { name: 'ZI_SupplierVH', element: 'SupplierID' } }]
   SupplierID;
 
-  @UI.lineItem: [{ position: 50 }]
+  @UI.lineItem: [{ position: 50, importance: #HIGH }]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 50 }]
   TotalAmount;
 
   @UI.lineItem: [{ position: 60 }]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 60 }]
   ApprovalRiskLevel;
 
   @UI.lineItem: [{ position: 70 }]
+  @UI.fieldGroup: [{ qualifier: 'HeaderData', position: 70 }]
   DaysUntilDelivery;
 }

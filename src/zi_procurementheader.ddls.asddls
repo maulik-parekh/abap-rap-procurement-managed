@@ -10,6 +10,13 @@ define root view entity ZI_ProcurementHeader
       pr_number             as PRNumber,
       description           as Description,
       requisition_status    as RequisitionStatus,
+      
+      case requisition_status
+        when 'A' then 3   // Green (Checkmark Icon)
+        when 'R' then 1   // Red (Error Cross Icon)
+        else 2            // Yellow/Orange (Warning Triangle Icon)
+      end                   as StatusCriticality,
+      
       supplier_id           as SupplierID,
       @Semantics.amount.currencyCode: 'CurrencyCode'
       total_amount          as TotalAmount,

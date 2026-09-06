@@ -35,7 +35,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       (
         %cid              = 'CREATE1'
         Description       = 'ABAP Unit Test'
+        SupplierID        = 'SUP001'
         RequisitionStatus = 'N'
+        CurrencyCode      = 'INR'
       )
     ).
 
@@ -44,7 +46,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       CREATE FIELDS
       (
         Description
+        SupplierID
         RequisitionStatus
+        CurrencyCode
       )
       WITH lt_create
       MAPPED DATA(mapped_create)
@@ -70,7 +74,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       (
         %cid              = 'APPROVE1'
         Description       = 'Approve Test'
+        SupplierID        = 'SUP001'
         RequisitionStatus = 'N'
+        CurrencyCode      = 'INR'
       )
     ).
 
@@ -79,7 +85,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       CREATE FIELDS
       (
         Description
+        SupplierID
         RequisitionStatus
+        CurrencyCode
       )
       WITH lt_create
       MAPPED DATA(mapped_create)
@@ -88,6 +96,10 @@ CLASS ltc_procurementheader IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_initial(
       act = failed_create
+    ).
+
+    cl_abap_unit_assert=>assert_not_initial(
+      act = mapped_create-header
     ).
 
     DATA lt_action
@@ -131,7 +143,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       (
         %cid              = 'REJECT1'
         Description       = 'Reject Test'
+        SupplierID        = 'SUP001'
         RequisitionStatus = 'N'
+        CurrencyCode      = 'INR'
       )
     ).
 
@@ -140,7 +154,9 @@ CLASS ltc_procurementheader IMPLEMENTATION.
       CREATE FIELDS
       (
         Description
+        SupplierID
         RequisitionStatus
+        CurrencyCode
       )
       WITH lt_create
       MAPPED DATA(mapped_create)
@@ -149,6 +165,10 @@ CLASS ltc_procurementheader IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_initial(
       act = failed_create
+    ).
+
+    cl_abap_unit_assert=>assert_not_initial(
+      act = mapped_create-header
     ).
 
     DATA lt_action
@@ -214,6 +234,10 @@ CLASS ltc_procurementheader IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_initial(
       act = failed_create
+    ).
+
+    cl_abap_unit_assert=>assert_not_initial(
+      act = mapped_create-header
     ).
 
     DATA lt_action

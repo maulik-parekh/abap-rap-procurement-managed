@@ -68,6 +68,10 @@ CLASS zcl_pr_data_generator IMPLEMENTATION.
         DELETE FROM zpr_item.
         DELETE FROM zpr_header.
 
+        DELETE FROM zpr_account_d.
+        DELETE FROM zpr_item_d.
+        DELETE FROM zpr_header_d.
+
         DELETE FROM zsupplier_master.
         DELETE FROM zmaterial_master.
         DELETE FROM zcost_center_m.
